@@ -90,24 +90,47 @@
 - risk_tags[]
 - suggestions[]
 
-## 7. 技术方案建议
-- **前端**：Web（React/Next.js）或小程序
-- **后端**：Python FastAPI / Node.js NestJS
-- **数据库**：PostgreSQL
-- **缓存**：Redis
-- **对象存储**：S3/OSS（存餐食图片）
-- **任务队列**：Celery / BullMQ（异步营养计算、周报生成）
-- **AI 能力（可选）**：
-  - 图片识别辅助食物识别
-  - LLM 生成“更自然的建议文案”
+## 7. 技术选型与框架选择（已落地）
 
-## 8. 里程碑计划
+### 7.1 后端（当前代码）
+- **框架**：FastAPI（Python）
+- **数据校验**：Pydantic v2
+- **运行方式**：Uvicorn
+- **当前存储**：内存仓储（用于 MVP 快速联调）
+- **计划迁移**：PostgreSQL + SQLAlchemy + Alembic
+
+### 7.2 工程结构
+- `backend/app/main.py`：API 路由入口
+- `backend/app/schemas.py`：请求/响应模型
+- `backend/app/service.py`：聚合与评估编排
+- `backend/app/scoring.py`：健康评分与风险标签
+- `backend/app/recommendation.py`：建议模板与偏好过滤
+- `backend/app/repository.py`：仓储层（当前内存实现）
+
+### 7.3 为什么选 FastAPI
+- 上手快、异步友好、自动 OpenAPI 文档，适合 MVP 快速迭代
+- 与数据科学/规则引擎栈兼容性好，便于后续接入模型服务
+- 生态成熟，迁移到生产架构成本低
+
+## 8. 本地运行
+
+```bash
+cd backend
+python -m venv .venv
+source .venv/bin/activate
+pip install -e .[dev]
+uvicorn app.main:app --reload
+```
+
+打开 `http://127.0.0.1:8000/docs` 可查看接口文档。
+
+## 9. 里程碑计划
 - **第 1 周**：需求细化、原型图、数据表设计
 - **第 2-3 周**：记录功能 + 营养计算 MVP
 - **第 4 周**：健康评分 + 建议生成
 - **第 5 周**：用户测试与指标验证（次日留存、周活、记录完成率）
 
-## 9. 关键指标（North Star + 支撑指标）
+## 10. 关键指标（North Star + 支撑指标）
 - **North Star**：7 日内完成 ≥5 次饮食记录的用户占比
 - 支撑指标：
   - 每日记录完成率
@@ -115,14 +138,8 @@
   - 连续记录天数
   - 饮食评分提升幅度（周环比）
 
-## 10. 合规与隐私
+## 11. 合规与隐私
 - 健康数据属于敏感信息，需最小化采集
 - 默认私密，用户可选择是否公开分享
 - 账号删除时支持数据导出与彻底清除
 - 明确声明：本产品为健康管理建议，不替代医疗诊断
-
----
-如果你愿意，我下一步可以基于这个 README 继续输出：
-1) API 设计（OpenAPI 草案）
-2) 数据库建表 SQL
-3) 健康评分引擎的可执行伪代码/实现样例
