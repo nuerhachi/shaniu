@@ -69,3 +69,10 @@ def test_meal_assessment_flow() -> None:
     weekly = client.get(f"/api/v1/reports/weekly?user_id={user_id}&end_date=2026-03-10")
     assert weekly.status_code == 200
     assert weekly.json()["completed_days"] >= 1
+
+
+def test_web_client_index() -> None:
+    client = TestClient(app)
+    response = client.get("/")
+    assert response.status_code == 200
+    assert "MVP 客户端" in response.text

@@ -9,6 +9,7 @@
 
 ## 2. 技术实现路径
 - **后端框架**：FastAPI
+- **客户端形态**：内置静态 Web UI（由 FastAPI 直接托管）
 - **接口协议**：REST + JSON
 - **模型校验**：Pydantic
 - **MVP 存储**：内存仓储（代码已实现）
@@ -38,3 +39,7 @@
 - `daily_score_viewed`
 - `suggestion_clicked`
 - `suggestion_adopted`
+
+
+## 7. 客户端联调入口
+- `GET /`：MVP 客户端页面（创建用户、提交餐食、触发评估）

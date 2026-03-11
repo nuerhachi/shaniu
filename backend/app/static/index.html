@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>膳你 MVP 客户端</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 24px; background: #f7f8fa; color: #1f2937; }
+      .card { background: #fff; border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+      h1 { margin-top: 0; }
+      input, select, textarea, button { padding: 8px; margin: 4px 0; width: 100%; box-sizing: border-box; }
+      button { cursor: pointer; background: #2563eb; color: white; border: none; border-radius: 8px; }
+      pre { background: #111827; color: #d1fae5; padding: 12px; border-radius: 8px; overflow: auto; }
+      .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    </style>
+  </head>
+  <body>
+    <h1>膳你（ShanYu）MVP 客户端</h1>
+
+    <div class="card">
+      <h3>1) 创建用户</h3>
+      <div class="row">
+        <input id="age" type="number" value="28" placeholder="年龄" />
+        <select id="sex">
+          <option value="female">female</option>
+          <option value="male">male</option>
+          <option value="other">other</option>
+        </select>
+      </div>
+      <div class="row">
+        <input id="height" type="number" value="165" placeholder="身高(cm)" />
+        <input id="weight" type="number" value="58" placeholder="体重(kg)" />
+      </div>
+      <select id="goal">
+        <option value="balanced">balanced</option>
+        <option value="fat_loss">fat_loss</option>
+        <option value="muscle_gain">muscle_gain</option>
+        <option value="glycemic_control">glycemic_control</option>
+      </select>
+      <button onclick="createUser()">创建用户</button>
+    </div>
+
+    <div class="card">
+      <h3>2) 提交餐食（简化单条）</h3>
+      <input id="userId" type="number" placeholder="user_id" />
+      <select id="mealType">
+        <option value="breakfast">breakfast</option>
+        <option value="lunch" selected>lunch</option>
+        <option value="dinner">dinner</option>
+        <option value="snack">snack</option>
+      </select>
+      <textarea id="note" rows="2" placeholder="备注">鸡胸肉+米饭+蔬菜</textarea>
+      <div class="row">
+        <input id="foodName" value="鸡胸肉" placeholder="食物名称" />
+        <input id="amount" value="150g" placeholder="份量" />
+      </div>
+      <div class="row">
+        <input id="calories" type="number" value="248" placeholder="calories" />
+        <input id="protein" type="number" value="46" placeholder="protein" />
+      </div>
+      <div class="row">
+        <input id="fat" type="number" value="5" placeholder="fat" />
+        <input id="carbs" type="number" value="0" placeholder="carbs" />
+      </div>
+      <div class="row">
+        <input id="sodium" type="number" value="180" placeholder="sodium" />
+        <input id="fiber" type="number" value="0" placeholder="fiber" />
+      </div>
+      <input id="sugar" type="number" value="0" placeholder="sugar" />
+      <button onclick="createMeal()">提交餐食</button>
+    </div>
+
+    <div class="card">
+      <h3>3) 生成每日评估</h3>
+      <input id="date" type="date" />
+      <button onclick="createAssessment()">计算评估</button>
+    </div>
+
+    <div class="card">
+      <h3>响应结果</h3>
+      <pre id="output">等待操作...</pre>
+    </div>
+
+    <script>
+      const out = (obj) => document.getElementById('output').textContent = JSON.stringify(obj, null, 2);
+      document.getElementById('date').value = new Date().toISOString().slice(0, 10);
+
+      async function createUser() {
+        const payload = {
+          age: Number(age.value),
+          sex: sex.value,
+          height_cm: Number(height.value),
+          weight_kg: Number(weight.value),
+          goal: goal.value,
+          avoid_spicy: false,
+          lactose_intolerant: false
+        };
+        const r = await fetch('/api/v1/users', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        const data = await r.json();
+        if (data.id) userId.value = data.id;
+        out(data);
+      }
+
+      async function createMeal() {
+        const payload = {
+          user_id: Number(userId.value),
+          meal_type: mealType.value,
+          occurred_at: new Date().toISOString(),
+          note: note.value,
+          items: [{
+            food_name: foodName.value,
+            amount: amount.value,
+            calories: Number(calories.value),
+            protein: Number(protein.value),
+            fat: Number(fat.value),
+            carbs: Number(carbs.value),
+            sodium: Number(sodium.value),
+            fiber: Number(fiber.value),
+            sugar: Number(sugar.value)
+          }]
+        };
+        const r = await fetch('/api/v1/meals', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        out(await r.json());
+      }
+
+      async function createAssessment() {
+        const payload = { user_id: Number(userId.value), date: date.value };
+        const r = await fetch('/api/v1/assessments/daily', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        out(await r.json());
+      }
+    </script>
+  </body>
+</html>

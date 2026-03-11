@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 from datetime import date, timedelta
+from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.responses import FileResponse
 
 from app.repository import repo
 from app.schemas import (
@@ -17,6 +19,11 @@ from app.schemas import (
 from app.service import build_daily_assessment
 
 app = FastAPI(title="ShanYu API", version="0.1.0")
+
+
+@app.get("/", include_in_schema=False)
+def index() -> FileResponse:
+    return FileResponse(Path(__file__).parent / "static" / "index.html")
 
 
 @app.get("/health")

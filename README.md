@@ -45,6 +45,11 @@
 - 周建议：长期结构性优化（如减少外卖、提高蛋白质占比）
 - 风险提示：连续多天高钠/高糖时预警
 
+### 3.5 MVP 客户端（新增）
+- 提供内置 Web 页面（`/`）
+- 支持创建用户、提交餐食、触发每日评估
+- 便于产品/运营/测试同学无需 Postman 即可联调
+
 ## 4. 健康评分逻辑（可迭代）
 建议初版采用可解释的规则引擎（便于上线与运营），后续再迭代为机器学习模型。
 
@@ -100,7 +105,7 @@
 - **计划迁移**：PostgreSQL + SQLAlchemy + Alembic
 
 ### 7.2 工程结构
-- `backend/app/main.py`：API 路由入口
+- `backend/app/main.py`：API 路由入口（含客户端首页路由）
 - `backend/app/schemas.py`：请求/响应模型
 - `backend/app/service.py`：聚合与评估编排
 - `backend/app/scoring.py`：健康评分与风险标签
@@ -122,7 +127,7 @@ pip install -e .[dev]
 uvicorn app.main:app --reload
 ```
 
-打开 `http://127.0.0.1:8000/docs` 可查看接口文档。
+打开 `http://127.0.0.1:8000/` 可使用 MVP 客户端页面；`http://127.0.0.1:8000/docs` 可查看接口文档。
 
 ## 9. 里程碑计划
 - **第 1 周**：需求细化、原型图、数据表设计
